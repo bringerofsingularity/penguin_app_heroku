@@ -56,6 +56,7 @@ rf_clf.fit(X_train, y_train)
 rf_clf_score = rf_clf.score(X_train, y_train)
 
 # Create a function that accepts 'model', island', 'bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g' and 'sex' as inputs and returns the species name.
+@st.cache()
 def prediction(model, island, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, sex):
   species = model.predict([[island, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, sex]])
   species = species[0]
@@ -72,30 +73,30 @@ b_len = st.sidebar.slider("Bill Length", float(df["bill_length_mm"].min()), floa
 b_dep = st.sidebar.slider("Bill Depth", float(df["bill_depth_mm"].min()), float(df["bill_depth_mm"].max()))
 f_len = st.sidebar.slider("Flipper Length", float(df["flipper_length_mm"].min()), float(df["flipper_length_mm"].max()))
 body_mass_g = st.sidebar.slider("Body Mass", float(df["body_mass_g"].min()), float(df["body_mass_g"].max()))
-sex = st.sidebar.selectbox("Sex", ("Male", "Female"))
-if "sex" == "Male":
+sex = st.selectbox("Sex", ("Male", "Female"))
+if sex == "Male":
 	sex = 0
 else:
 	sex = 1
-island = st.sidebar.selectbox("Island", ("Biscoe", "Dream", "Torgersen"))
-if "island" == "Biscoe":
+island = st.selectbox("Island", ("Biscoe", "Dream", "Torgersen"))
+if island == "Biscoe":
 	island = 0
-elif "island" == "Dream":
+elif island == "Dream":
 	island = 1
 else:
 	island = 2
 classifier = st.sidebar.selectbox("Classifier", ("Support Vector Machine", "Random Forest Classifier", "Logistics Regression"))
 if st.sidebar.button("Predict"):
   if classifier == "Support Vector Machine":
-    species_type = prediction(svc_model, b_len, b_dep, f_len, body_mass_g, sex)
+    species_type = prediction(svc_model, island, b_len, b_dep, f_len, body_mass_g, sex)
     score = svc_model.score(X_train, y_train)
 
   elif classifier == "Logistic Regression":
-    species_type = prediction(log_reg, b_len, b_dep, f_len, body_mass_g, sex)
+    species_type = prediction(log_reg, island, b_len, b_dep, f_len, body_mass_g, sex)
     score = log_reg.score(X_train, y_train)
 
   else:
-    species_type = prediction(rf_clf, b_len, b_dep, f_len, body_mass_g, sex)
+    species_type = prediction(rf_clf, island, b_len, b_dep, f_len, body_mass_g, sex)
     score = rf_clf.score(X_train, y_train)
 
   st.write("Species predicted:", species_type)
